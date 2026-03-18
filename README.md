@@ -1,62 +1,62 @@
-# To-Do List REST API (Junior PHP Test)
+# To-Do List REST API (тестовое задание Junior PHP)
 
-Simple REST API for managing tasks, implemented on pure PHP 8 + MySQL.
+Простое REST API для управления задачами, реализованное на чистом PHP 8 + MySQL.
 
-## Requirements
+## Требования
 
 - PHP 8.1+
-- MySQL server (local or remote)
-- `pdo_mysql` extension enabled
+- MySQL сервер (локальный или удаленный)
+- включено расширение `pdo_mysql`
 
-## DB config (environment variables)
+## Настройки БД (переменные окружения)
 
-- `DB_HOST` (default: `127.0.0.1`)
-- `DB_PORT` (default: `3306`)
-- `DB_DATABASE` (default: `todo_api`)
-- `DB_USERNAME` (default: `root`)
-- `DB_PASSWORD` (default: empty)
+- `DB_HOST` (по умолчанию: `127.0.0.1`)
+- `DB_PORT` (по умолчанию: `3306`)
+- `DB_DATABASE` (по умолчанию: `todo_api`)
+- `DB_USERNAME` (по умолчанию: `root`)
+- `DB_PASSWORD` (по умолчанию: пусто)
 
-Database and `tasks` table are created automatically at startup.
+База данных и таблица `tasks` создаются автоматически при запуске.
 
-## Run
+## Запуск
 
 ```bash
 php -S localhost:8000 router.php
 ```
 
-Base URL: `http://localhost:8000`
+Базовый URL: `http://localhost:8000`
 
-## Endpoints
+## Эндпоинты
 
-- `POST /tasks` - create task
-- `GET /tasks` - list tasks
-- `GET /tasks/{id}` - get one task
-- `PUT /tasks/{id}` - update task
-- `DELETE /tasks/{id}` - delete task
+- `POST /tasks` - создать задачу
+- `GET /tasks` - получить список задач
+- `GET /tasks/{id}` - получить одну задачу
+- `PUT /tasks/{id}` - обновить задачу
+- `DELETE /tasks/{id}` - удалить задачу
 
-## Payload fields
+## Поля запроса
 
-- `title` (required for create, non-empty)
-- `description` (optional)
-- `status` (optional, one of: `pending`, `in_progress`, `done`)
+- `title` (обязательно при создании, не должно быть пустым)
+- `description` (необязательно)
+- `status` (необязательно, одно из: `pending`, `in_progress`, `done`)
 
-## Examples
+## Примеры
 
-Create task:
+Создание задачи:
 
 ```bash
 curl -X POST http://localhost:8000/tasks \
   -H "Content-Type: application/json" \
-  -d '{"title":"Buy milk","description":"2 liters","status":"pending"}'
+  -d '{"title":"Купить молоко","description":"2 литра","status":"pending"}'
 ```
 
-Get all tasks:
+Получение всех задач:
 
 ```bash
 curl http://localhost:8000/tasks
 ```
 
-Update task:
+Обновление задачи:
 
 ```bash
 curl -X PUT http://localhost:8000/tasks/1 \
@@ -64,7 +64,7 @@ curl -X PUT http://localhost:8000/tasks/1 \
   -d '{"status":"done"}'
 ```
 
-Delete task:
+Удаление задачи:
 
 ```bash
 curl -X DELETE http://localhost:8000/tasks/1
