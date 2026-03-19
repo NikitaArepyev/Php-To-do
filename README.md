@@ -1,12 +1,24 @@
 # To-Do List REST API (тестовое задание Junior PHP)
 
-Простое REST API для управления задачами, реализованное на чистом PHP 8 + MySQL.
+REST API для управления задачами на чистом PHP 8 + MySQL.
 
-## Требования
+## Что реализовано
+
+- CRUD-эндпоинты для задач (`POST`, `GET`, `PUT`, `DELETE`)
+- слоистая архитектура (`Controller`, `Service`, `Repository`, `Infrastructure`)
+- валидация входных данных
+- CORS и обработка `OPTIONS` preflight
+- логирование запросов в файл
+- контейнеризация через Docker
+- unit-тесты на `PHPUnit`
+- OpenAPI-спецификация (`openapi.yaml`)
+
+## Требования для локального запуска
 
 - PHP 8.1+
-- MySQL сервер (локальный или удаленный)
-- включено расширение `pdo_mysql`
+- MySQL
+- Composer
+- расширение `pdo_mysql`
 
 ## Настройки БД (переменные окружения)
 
@@ -18,13 +30,33 @@
 
 База данных и таблица `tasks` создаются автоматически при запуске.
 
-## Запуск
+## Запуск локально
 
 ```bash
-php -S localhost:8000 router.php
+composer install
+composer serve
 ```
 
 Базовый URL: `http://localhost:8000`
+
+## Запуск в Docker
+
+```bash
+docker compose up --build
+```
+
+После запуска API доступно по адресу: `http://localhost:8000`
+
+## Тесты
+
+```bash
+composer test
+```
+
+## Swagger / OpenAPI
+
+- Спецификация находится в файле `openapi.yaml`
+- Быстрый просмотр через Swagger Editor: https://editor.swagger.io/
 
 ## Эндпоинты
 
@@ -40,7 +72,12 @@ php -S localhost:8000 router.php
 - `description` (необязательно)
 - `status` (необязательно, одно из: `pending`, `in_progress`, `done`)
 
-## Примеры
+## Логирование
+
+- Логи пишутся в `storage/logs/app.log`
+- Формат: дата, метод, путь, статус ответа, длительность запроса, IP
+
+## Примеры запросов
 
 Создание задачи:
 

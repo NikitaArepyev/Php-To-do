@@ -1,0 +1,182 @@
+openapi: 3.0.3
+info:
+  title: To-Do List REST API
+  version: 1.0.0
+  description: API для управления задачами (Junior PHP test task).
+servers:
+  - url: http://localhost:8000
+paths:
+  /tasks:
+    get:
+      summary: Получить список задач
+      responses:
+        '200':
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Task'
+    post:
+      summary: Создать задачу
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskCreateRequest'
+      responses:
+        '201':
+          description: Задача создана
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Task'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+  /tasks/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+    get:
+      summary: Получить задачу по ID
+      responses:
+        '200':
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Task'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      summary: Обновить задачу по ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskUpdateRequest'
+      responses:
+        '200':
+          description: Задача обновлена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Task'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+    delete:
+      summary: Удалить задачу по ID
+      responses:
+        '200':
+          description: Задача удалена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Task deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+components:
+  schemas:
+    Task:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        title:
+          type: string
+          example: Купить молоко
+        description:
+          type: string
+          example: 2 литра
+        status:
+          type: string
+          enum: [pending, in_progress, done]
+          example: pending
+        created_at:
+          type: string
+          format: date-time
+          example: '2026-03-19 12:30:00'
+        updated_at:
+          type: string
+          format: date-time
+          example: '2026-03-19 12:30:00'
+    TaskCreateRequest:
+      type: object
+      required: [title]
+      properties:
+        title:
+          type: string
+          example: Купить молоко
+        description:
+          type: string
+          example: 2 литра
+        status:
+          type: string
+          enum: [pending, in_progress, done]
+          example: pending
+    TaskUpdateRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          example: Купить молоко и хлеб
+        description:
+          type: string
+          example: 2 литра и батон
+        status:
+          type: string
+          enum: [pending, in_progress, done]
+          example: in_progress
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Validation failed
+        errors:
+          type: object
+          additionalProperties:
+            type: string
+  responses:
+    ValidationError:
+      description: Ошибка валидации
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: Ресурс не найден
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Task not found
