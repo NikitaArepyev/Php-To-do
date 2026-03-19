@@ -9,27 +9,54 @@ use TodoApi\Controller\TaskController;
 use TodoApi\Exception\HttpException;
 use TodoApi\Http\Request;
 use TodoApi\Http\Response;
+use TodoApi\Support\FileLogger;
 
 final class App
 {
-    public function __construct(private readonly TaskController $taskController)
+    private const CORS_HEADERS = [
+        'Access-Control-Allow-Origin' => '*',
+        'Access-Control-Allow-Methods' => 'GET, POST, PUT, DELETE, OPTIONS',
+        'Access-Control-Allow-Headers' => 'Content-Type, Authorization',
+        'Access-Control-Max-Age' => '86400',
+    ];
+
+    public function __construct(
+        private readonly TaskController $taskController,
+        private readonly FileLogger $logger
+    )
     {
     }
 
     public function run(): void
     {
         $request = Request::fromGlobals();
+        $startedAt = microtime(true);
+        $statusCode = 500;
 
         try {
+            if ($request->getMethod() === 'OPTIONS') {
+                $statusCode = 204;
+                Response::noContent(204, self::CORS_HEADERS);
+                return;
+            }
+
             $result = $this->dispatch($request);
-            Response::json($result['status'], $result['body'], $result['headers'] ?? []);
+            $statusCode = $result['status'];
+            $headers = array_merge(self::CORS_HEADERS, $result['headers'] ?? []);
+            Response::json($statusCode, $result['body'], $headers);
             return;
         } catch (HttpException $exception) {
-            Response::json($exception->getStatusCode(), $exception->getBody(), $exception->getHeaders());
+            $statusCode = $exception->getStatusCode();
+            $headers = array_merge(self::CORS_HEADERS, $exception->getHeaders());
+            Response::json($statusCode, $exception->getBody(), $headers);
             return;
         } catch (Throwable $exception) {
-            Response::json(500, ['message' => 'Internal Server Error', 'error' => $exception->getMessage()]);
+            $statusCode = 500;
+            Response::json(500, ['message' => 'Internal Server Error', 'error' => $exception->getMessage()], self::CORS_HEADERS);
             return;
+        } finally {
+            $durationMs = (microtime(true) - $startedAt) * 1000;
+            $this->logger->logRequest($request, $statusCode, $durationMs);
         }
     }
 

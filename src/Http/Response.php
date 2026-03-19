@@ -6,6 +6,15 @@ namespace TodoApi\Http;
 
 final class Response
 {
+    public static function noContent(int $statusCode = 204, array $headers = []): void
+    {
+        http_response_code($statusCode);
+
+        foreach ($headers as $name => $value) {
+            header(sprintf('%s: %s', $name, $value));
+        }
+    }
+
     public static function json(int $statusCode, array $body, array $headers = []): void
     {
         http_response_code($statusCode);

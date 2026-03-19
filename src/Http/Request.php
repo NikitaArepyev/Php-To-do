@@ -34,6 +34,11 @@ final class Request
         return $normalized === '' ? '/' : $normalized;
     }
 
+    public function getClientIp(): string
+    {
+        return (string)($this->server['REMOTE_ADDR'] ?? '-');
+    }
+
     public function getJsonBody(): array
     {
         if ($this->decodedJsonBody !== null) {
